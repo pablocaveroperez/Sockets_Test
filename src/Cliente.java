@@ -18,35 +18,13 @@ public class Cliente {
 	DataOutputStream dout = null;
 	BufferedReader br = null;
 	Socket socket = null;
-	ControlCliente controlCliente = null;
 
 	try {
 	    System.out.println("El cliente se va a conectar");
 	    socket = new Socket(HOST, Servidor.PORT);
-	    System.out.println("Cliente conectado");
-	    Control.cogerAtencion(socket);
-	    System.out.println("Cojo la anteicón bien.");
-	    InputStream inputStream = socket.getInputStream();
-	    System.out.println("input creado");
-
-	    // create a DataInputStream so we can read data from it.
-	    ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-	    System.out.println("Objet traido.");
-
-	    // read the list of messages from the socket
-	    List<ControlCliente> lClientes = (List<ControlCliente>) objectInputStream.readObject();
-	    System.out.println("La lista la coge bien. Tiene ahora: "+lClientes.size());
-	    controlCliente = new ControlCliente(Control.iContadorClientes++);
-
-	    lClientes.add(controlCliente);
-	    Control.soltarAtencion(lClientes);
-	    System.out.println("Lo ha soltado bien "+lClientes.size());
-
-	    new Thread(controlCliente).start();
-	    // din = new DataInputStream(socket.getInputStream());
+	    new Thread(new Servidor.ControlCliente(socket)).start();
 	    dout = new DataOutputStream(socket.getOutputStream());
 	    br = new BufferedReader(new InputStreamReader(System.in));
-
 	    String sMensajeRecibido = "", sMensajeEnviado = "";
 	    while (!sMensajeEnviado.equals("gitano")) {
 		sMensajeEnviado = br.readLine();
@@ -59,7 +37,6 @@ public class Cliente {
 
 	} catch (Exception ex) {
 	    try {
-		Control.lClientes.remove(controlCliente);
 		din.close();
 		socket.close();
 		br.close();
