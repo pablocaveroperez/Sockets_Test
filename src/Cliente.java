@@ -25,12 +25,12 @@ public class Cliente {
 	    br = new BufferedReader(new InputStreamReader(System.in));
 
 	    String sMensajeRecibido = "", sMensajeEnviado = "";
-	    while (!sMensajeEnviado.equals("salir")) {
+	    while (!sMensajeEnviado.equals("gitano")) {
 		sMensajeEnviado = br.readLine();
 		dout.writeUTF(sMensajeEnviado);
 		dout.flush();
-		sMensajeRecibido = din.readUTF();
-		System.out.println("Server says: " + sMensajeRecibido);
+		//sMensajeRecibido = din.readUTF();
+		//System.out.println("Server says: " + sMensajeRecibido);
 	    }
 
 	} catch (Exception ex) {
