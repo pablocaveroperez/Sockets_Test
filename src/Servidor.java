@@ -11,7 +11,7 @@ public class Servidor {
     public static final int PORT = 1234;
 
     public static void main(String[] args) {
-	DataInputStream din = null;
+	//DataInputStream din = null;
 	DataOutputStream dout = null;
 	BufferedReader br = null;
 	ServerSocket serverSocket = null;
@@ -22,15 +22,16 @@ public class Servidor {
 	    System.out.println("Servidor conectado. Esperando conexiones. ");
 	    serverSocket = new ServerSocket(PORT);
 	    socket = serverSocket.accept();
+	    new Control(socket, Servidor.class);
 	    System.out.println("Cliente conectado. Disfruten de la comunicación");
-	    din = new DataInputStream(socket.getInputStream());
+	    //din = new DataInputStream(socket.getInputStream());
 	    dout = new DataOutputStream(socket.getOutputStream());
 	    br = new BufferedReader(new InputStreamReader(System.in));
 
-	    String sMensajeRecibido = "", sMensajeEnviado = "";
+	    String sMensajeEnviado = "";
 	    while (!sMensajeEnviado.equals("salir")) {
-		sMensajeRecibido = din.readUTF();
-		System.out.println("client says: " + sMensajeRecibido);
+		//sMensajeRecibido = din.readUTF();
+		//System.out.println("client says: " + sMensajeRecibido);
 		sMensajeEnviado = br.readLine();
 		dout.writeUTF(sMensajeEnviado);
 		dout.flush();
@@ -38,7 +39,7 @@ public class Servidor {
 
 	} catch (Exception ex) {
 	    try {
-		din.close();
+		//din.close();
 		socket.close();
 		serverSocket.close();
 		br.close();

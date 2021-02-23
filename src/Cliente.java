@@ -11,7 +11,7 @@ public class Cliente {
 
     public static void main(String[] args) {
 
-	DataInputStream din = null;
+	//DataInputStream din = null;
 	DataOutputStream dout = null;
 	BufferedReader br = null;
 	Socket socket = null;
@@ -20,7 +20,8 @@ public class Cliente {
 	    System.out.println("El cliente se va a conectar");
 	    socket = new Socket(HOST, Servidor.PORT);
 	    System.out.println("Cliente conectado");
-	    din = new DataInputStream(socket.getInputStream());
+	    new Control(socket, Cliente.class);
+	    //din = new DataInputStream(socket.getInputStream());
 	    dout = new DataOutputStream(socket.getOutputStream());
 	    br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -29,13 +30,13 @@ public class Cliente {
 		sMensajeEnviado = br.readLine();
 		dout.writeUTF(sMensajeEnviado);
 		dout.flush();
-		sMensajeRecibido = din.readUTF();
-		System.out.println("Server says: " + sMensajeRecibido);
+		//sMensajeRecibido = din.readUTF();
+		//System.out.println("Server says: " + sMensajeRecibido);
 	    }
 
 	} catch (Exception ex) {
 	    try {
-		din.close();
+		//din.close();
 		socket.close();
 		br.close();
 		dout.close();
