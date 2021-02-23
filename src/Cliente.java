@@ -20,7 +20,7 @@ public class Cliente {
 	    System.out.println("El cliente se va a conectar");
 	    socket = new Socket(HOST, Servidor.PORT);
 	    System.out.println("Cliente conectado");
-	    new Control(socket, Cliente.class);
+	    Control.control = new Control(socket, Cliente.class);
 	    //din = new DataInputStream(socket.getInputStream());
 	    dout = new DataOutputStream(socket.getOutputStream());
 	    br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,6 +29,7 @@ public class Cliente {
 	    while (!sMensajeEnviado.equals("salir")) {
 		sMensajeEnviado = br.readLine();
 		dout.writeUTF(sMensajeEnviado);
+		Control.control.sumarSemaforoServer();
 		dout.flush();
 		//sMensajeRecibido = din.readUTF();
 		//System.out.println("Server says: " + sMensajeRecibido);

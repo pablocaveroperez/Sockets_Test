@@ -6,34 +6,52 @@ import java.util.concurrent.Semaphore;
 public class Control {
 
     public Semaphore semaServer;
-    // public static Semaphore semaCliente;
+    public Semaphore semaCliente;
     private Socket socket;
-    private Class clase;
-
-    public Control(Socket socket, Class clase) {
-	semaServer = new Semaphore(1);
-	this.socket = socket;
-	this.clase = clase;
-	new Thread(new Lector()).start();
+    
+    public Control () {
+	semaServer = new Semaphore(0);
+	semaCliente = new Semaphore(0);
     }
 
-    public void restarSemaforo() {
+    public Control(Socket socket, Class clase) {
+	semaServer = new Semaphore(0);
+	semaCliente = new Semaphore(0);
+	this.socket = socket;
+	if (clase.getName().equals(Servidor.class.getName())) {
+	    new Thread(new LectorServer()).start();
+	} else {
+		new Thread(new LectorCliente()).start();
+	}
+    }
+
+    public void restarSemaforoServer() {
 	try {
-	    semaServer.acquire();
+	    control.semaServer.acquire();
 	} catch (Exception ex) {
 	    System.err.println(ex.getMessage());
 	}
     }
 
-    public void sumarSemaforo() {
-	semaServer.release();
+    public void sumarSemaforoServer() {
+	control.semaServer.release();
     }
+    
+    public void restarSemaforoCliente() {
+   	try {
+   	    control.semaCliente.acquire();
+   	} catch (Exception ex) {
+   	    System.err.println(ex.getMessage());
+   	}
+       }
 
-    public void controlSemaforo() {
-	System.out.println("Available: " + semaServer.availablePermits());
-    }
+       public void sumarSemaforoCliente() {
+   	control.semaCliente.release();
+       }
 
-    public class Lector implements Runnable {
+    public static Control control;
+
+    public class LectorServer implements Runnable {
 	DataInputStream din = null;
 
 	@Override
@@ -42,7 +60,9 @@ public class Control {
 
 		try {
 		    din = new DataInputStream(socket.getInputStream());
-		    System.out.println(clase.getName() + " dice: " + din.readUTF());
+		    control.restarSemaforoServer();
+		    System.out.println("### Cliente ha dicho: " + din.readUTF());
+
 		} catch (IOException e) {
 		    System.err.println(e.getMessage());
 		}
@@ -50,6 +70,26 @@ public class Control {
 
 	}
 
+    }
+    
+    public class LectorCliente implements Runnable {
+	DataInputStream din = null;
+
+	@Override
+	public void run () {
+	    while (true) {
+
+		try {
+		    din = new DataInputStream(socket.getInputStream());
+		    control.restarSemaforoCliente();
+		    System.out.println("Servidor ha dicho: " + din.readUTF());
+
+		} catch (IOException e) {
+		    System.err.println(e.getMessage());
+		}
+	    }
+	    
+	}
     }
 
 }

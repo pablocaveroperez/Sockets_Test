@@ -22,7 +22,7 @@ public class Servidor {
 	    System.out.println("Servidor conectado. Esperando conexiones. ");
 	    serverSocket = new ServerSocket(PORT);
 	    socket = serverSocket.accept();
-	    new Control(socket, Servidor.class);
+	    Control.control = new Control(socket, Servidor.class);
 	    System.out.println("Cliente conectado. Disfruten de la comunicación");
 	    //din = new DataInputStream(socket.getInputStream());
 	    dout = new DataOutputStream(socket.getOutputStream());
@@ -34,6 +34,7 @@ public class Servidor {
 		//System.out.println("client says: " + sMensajeRecibido);
 		sMensajeEnviado = br.readLine();
 		dout.writeUTF(sMensajeEnviado);
+		Control.control.sumarSemaforoCliente();
 		dout.flush();
 	    }
 
