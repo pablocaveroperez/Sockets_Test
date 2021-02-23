@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 
 public class Cliente {
@@ -11,7 +13,7 @@ public class Cliente {
 
     public static void main(String[] args) {
 
-	//DataInputStream din = null;
+	// DataInputStream din = null;
 	DataOutputStream dout = null;
 	BufferedReader br = null;
 	Socket socket = null;
@@ -20,8 +22,13 @@ public class Cliente {
 	    System.out.println("El cliente se va a conectar");
 	    socket = new Socket(HOST, Servidor.PORT);
 	    System.out.println("Cliente conectado");
-	    Control.control = new Control(socket, Cliente.class);
-	    //din = new DataInputStream(socket.getInputStream());
+	    InputStream inputStream = socket.getInputStream();
+	    // create a DataInputStream so we can read data from it.
+	    ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+	    Control control = (Control) objectInputStream.readObject();
+	    control.addSocketCliente(socket);
+	    new Thread(new Control.LectorCliente(control)).start();
+	    // din = new DataInputStream(socket.getInputStream());
 	    dout = new DataOutputStream(socket.getOutputStream());
 	    br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -29,15 +36,15 @@ public class Cliente {
 	    while (!sMensajeEnviado.equals("salir")) {
 		sMensajeEnviado = br.readLine();
 		dout.writeUTF(sMensajeEnviado);
-		Control.control.sumarSemaforoServer();
+		Servidor.control.sumarSemaforoServer();
 		dout.flush();
-		//sMensajeRecibido = din.readUTF();
-		//System.out.println("Server says: " + sMensajeRecibido);
+		// sMensajeRecibido = din.readUTF();
+		// System.out.println("Server says: " + sMensajeRecibido);
 	    }
 
 	} catch (Exception ex) {
 	    try {
-		//din.close();
+		// din.close();
 		socket.close();
 		br.close();
 		dout.close();

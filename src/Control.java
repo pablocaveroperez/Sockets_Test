@@ -1,65 +1,84 @@
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.concurrent.Semaphore;
 
-public class Control {
+public class Control implements Serializable{
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     public Semaphore semaServer;
     public Semaphore semaCliente;
-    private Socket socket;
-    
-    public Control () {
+    private static Socket socketCliente;
+    public static Socket socketServer;
+
+    public Control() {
 	semaServer = new Semaphore(0);
 	semaCliente = new Semaphore(0);
     }
 
-    public Control(Socket socket, Class clase) {
-	semaServer = new Semaphore(0);
-	semaCliente = new Semaphore(0);
-	this.socket = socket;
-	if (clase.getName().equals(Servidor.class.getName())) {
-	    new Thread(new LectorServer()).start();
-	} else {
-		new Thread(new LectorCliente()).start();
-	}
+    public void addSocketCliente(Socket socket) {
+	this.socketCliente = socket;
     }
+
+    public void addSocketServer(Socket socket) {
+	this.socketServer = socket;
+    }
+
+
+//    public Control(Socket socket, Class clase) {
+//	semaServer = new Semaphore(0);
+//	semaCliente = new Semaphore(0);
+//	// this.socket = socket;
+//	if (clase.getName().equals(Servidor.class.getName())) {
+//	    new Thread(new LectorServer()).start();
+//	} else {
+//	    new Thread(new LectorCliente()).start();
+//	}
+//    }
 
     public void restarSemaforoServer() {
 	try {
-	    control.semaServer.acquire();
+	    LectorServer.control.semaServer.acquire();
 	} catch (Exception ex) {
 	    System.err.println(ex.getMessage());
 	}
     }
 
     public void sumarSemaforoServer() {
-	control.semaServer.release();
+	semaServer.release();
     }
-    
+
     public void restarSemaforoCliente() {
-   	try {
-   	    control.semaCliente.acquire();
-   	} catch (Exception ex) {
-   	    System.err.println(ex.getMessage());
-   	}
-       }
+	try {
+	    semaCliente.acquire();
+	} catch (Exception ex) {
+	    System.err.println(ex.getMessage());
+	}
+    }
 
-       public void sumarSemaforoCliente() {
-   	control.semaCliente.release();
-       }
+    public void sumarSemaforoCliente() {
+	semaCliente.release();
+    }
 
-    public static Control control;
 
-    public class LectorServer implements Runnable {
+    public static class LectorServer implements Runnable {
 	DataInputStream din = null;
+	public static Control control;
+	
+	public LectorServer(Control control) {
+	    this.control = control;
+	}
 
 	@Override
 	public void run() {
 	    while (true) {
 
 		try {
-		    din = new DataInputStream(socket.getInputStream());
+		    din = new DataInputStream(socketServer.getInputStream());
 		    control.restarSemaforoServer();
 		    System.out.println("### Cliente ha dicho: " + din.readUTF());
 
@@ -71,16 +90,21 @@ public class Control {
 	}
 
     }
-    
-    public class LectorCliente implements Runnable {
+
+    public static class LectorCliente implements Runnable {
 	DataInputStream din = null;
+	public static Control control;
+	
+	public LectorCliente(Control control) {
+		this.control = control;
+	}
 
 	@Override
-	public void run () {
+	public void run() {
 	    while (true) {
 
 		try {
-		    din = new DataInputStream(socket.getInputStream());
+		    din = new DataInputStream(socketCliente.getInputStream());
 		    control.restarSemaforoCliente();
 		    System.out.println("Servidor ha dicho: " + din.readUTF());
 
@@ -88,7 +112,7 @@ public class Control {
 		    System.err.println(e.getMessage());
 		}
 	    }
-	    
+
 	}
     }
 
