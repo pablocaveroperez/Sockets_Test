@@ -18,26 +18,24 @@ public class Cliente {
 	DataOutputStream dout = null;
 	BufferedReader br = null;
 	Socket socket = null;
+	int idCliente = Servidor.iContador++;
 
 	try {
 	    System.out.println("El cliente se va a conectar");
 	    socket = new Socket(HOST, Servidor.PORT);
+	    System.out.println(socket.getTrafficClass());
+	    System.out.println(socket.getInetAddress());
 	    new Thread(new Servidor.ControlCliente(socket)).start();
 	    dout = new DataOutputStream(socket.getOutputStream());
 	    br = new BufferedReader(new InputStreamReader(System.in));
-	    String sMensajeRecibido = "", sMensajeEnviado = "";
+	    String sMensajeEnviado = "";
 	    while (!sMensajeEnviado.equals("gitano")) {
 		sMensajeEnviado = br.readLine();
-		dout.writeUTF(sMensajeEnviado);
-		dout.flush();
-
-		// sMensajeRecibido = din.readUTF();
-		// System.out.println("Server says: " + sMensajeRecibido);
+		dout.writeUTF("# "+idCliente+" : "+sMensajeEnviado);
 	    }
 
 	} catch (Exception ex) {
 	    try {
-		din.close();
 		socket.close();
 		br.close();
 		dout.close();

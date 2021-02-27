@@ -14,11 +14,9 @@ public class Servidor {
 
     public static final int PORT = 1234;
     public static ArrayList<ObjectOutputStream> clienteStream = new ArrayList<ObjectOutputStream>();
-
+    public static int iContador = 0;
+    
     public static void main(String[] args) {
-	DataInputStream din = null;
-	DataOutputStream dout = null;
-	BufferedReader br = null;
 	ServerSocket serverSocket = null;
 	Socket socket = null;
 
@@ -39,18 +37,20 @@ public class Servidor {
 
 	} catch (Exception ex) {
 	    try {
-		din.close();
 		socket.close();
 		serverSocket.close();
-		br.close();
-		dout.close();
 	    } catch (IOException e) {
-		e.printStackTrace();
+		System.err.println("Error en mainServidor. En IOException linea 42");
 	    }
 
 	    System.err.println("Error." + ex.getMessage());
 	}
 
+    }
+    
+    public static int getNewID() {
+	iContador++;
+	return iContador;
     }
 
     public static void shareToAll(String sMensaje, ObjectOutputStream obj) {
@@ -76,21 +76,19 @@ public class Servidor {
 	    public void run() {
 	        try {
 	            ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
-	            while(true){
+	            boolean bConexion = true;
+	            while(bConexion){
 	                try {
 	                    
 	                    System.out.println(ois.readUTF());
 	                } catch ( IOException e) {
-	                    // TODO Auto-generated catch block
-	                    e.printStackTrace();
+	                    System.err.println("Error en Controlcliente: "+e.getMessage());
+	                    bConexion = false;
 	                }
 	            }
-	        }catch(SocketException e){
+	        }catch(IOException e){
 	            System.out.println(clientSocket.getInetAddress().getHostAddress()+" disconnected from the Server");
 	            clienteStream.remove(clientSocket);
-	        }catch (IOException e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
 	        }
 	    }
 	}
