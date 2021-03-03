@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.concurrent.Semaphore;
 
 public class Control implements Runnable, Serializable {
     /**
@@ -26,7 +25,9 @@ public class Control implements Runnable, Serializable {
 	while (bConectado) {
 	    try {
 		din = new DataInputStream(this.socket.getInputStream());
-		Servidor.shareToAll(din.readUTF(), objStream);
+		if (this.socket!= null) {
+		    Servidor.shareToAll(din.readUTF(), objStream);
+		}
 
 	    } catch (IOException e) {
 		Servidor.clienteStream.remove(objStream);

@@ -15,7 +15,6 @@ public class Cliente {
 	DataOutputStream dout = null;
 	BufferedReader br = null;
 	Socket socket = null;
-	int idCliente = Servidor.iContador++;
 	System.setProperty("javax.net.ssl.trustStore", "certs/clienteTrustedCerts.jks");
 	System.setProperty("javax.net.ssl.trustStorePassword", "medacmedac");
 
@@ -30,7 +29,7 @@ public class Cliente {
 	    String sMensajeEnviado = "";
 	    while (!sMensajeEnviado.equals("gitano")) {
 		sMensajeEnviado = br.readLine();
-		dout.writeUTF("# " + idCliente + " : " + sMensajeEnviado);
+		dout.writeUTF("# : " + sMensajeEnviado);
 	    }
 	    System.out.println("Adios, por racista");
 	    System.exit(0);

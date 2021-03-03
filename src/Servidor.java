@@ -11,7 +11,6 @@ public class Servidor {
 
     public static final int PORT = 1234;
     public static ArrayList<ObjectOutputStream> clienteStream = new ArrayList<ObjectOutputStream>();
-    public static int iContador = 0;
     private static ServerSocket serverSocket = null;
     private static Socket socket = null;
 
@@ -37,12 +36,22 @@ public class Servidor {
 	System.setProperty("javax.net.ssl.trustStorePassword", "medacmedac");
 
 	try {
-	    metodoCutreCavero();
+	    System.out.println("Metodo cutro de cavero");
+	    SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+	    serverSocket = serverFactory.createServerSocket(PORT, 4);
+	    System.out.println("Servidor conectado. Esperando conexiones. ");
+
+	    while (true) {
+		socket = serverSocket.accept();
+		ObjectOutputStream objOutStream = new ObjectOutputStream(socket.getOutputStream());
+		clienteStream.add(objOutStream);
+		System.out.println("Cliente conectado. Disfruten de la comunicación");
+		new Thread(new Control(socket, objOutStream)).start();
+
+	    }
 
 	} catch (Exception ex) {
-	    metodoCutreCavero();
-
-	    // System.err.println("Error." + ex.getMessage());
+	    System.err.println("Error en main Servidor. Se cierra todo");
 	} finally {
 	    if (socket != null) {
 		try {
@@ -56,32 +65,7 @@ public class Servidor {
 
     }
 
-    private static void metodoCutreCavero() {
-	try {
-	    SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-	    serverSocket = serverFactory.createServerSocket(PORT, 4);
 
-	    // serverSocket = new ServerSocket(PORT, 4);
-	    System.out.println("Servidor conectado. Esperando conexiones. ");
-
-	    while (true) {
-		socket = serverSocket.accept();
-		ObjectOutputStream objOutStream = new ObjectOutputStream(socket.getOutputStream());
-		clienteStream.add(objOutStream);
-		System.out.println("Cliente conectado. Disfruten de la comunicación");
-		Thread t = new Thread(new Control(socket, objOutStream));
-		t.start();
-
-	    }
-	} catch (Exception e) {
-	    metodoCutreCavero();
-	}
-    }
-
-    public static int getNewID() {
-	iContador++;
-	return iContador;
-    }
 
     public static void shareToAll(String sMensaje, ObjectOutputStream obj) {
 	for (ObjectOutputStream stream : clienteStream) {
@@ -118,7 +102,6 @@ public class Servidor {
 		}
 	    } catch (IOException e) {
 		System.out.println(clientSocket.getInetAddress().getHostAddress() + " disconnected from the Server");
-		// cerrar();
 	    }
 	}
     }
