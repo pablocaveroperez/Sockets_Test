@@ -14,18 +14,20 @@ public class Servidor {
     public static int iContador = 0;
     private static ServerSocket serverSocket = null;
     private static Socket socket = null;
-    
 
     /**
-     * Creacion de certificados: 
-     * keytool -genkey -keyalg RSA -alias serverKey -keystore serverKey.jks -storepass servpass
+     * Creacion de certificados: keytool -genkey -keyalg RSA -alias serverKey
+     * -keystore serverKey.jks -storepass servpass
      * 
-     * Creacion de certificado de servidor keytool -export -keystore serverkey.jks -alias serverKey -file ServerPublicKey.cer (Contraseña es servpass)
+     * Creacion de certificado de servidor keytool -export -keystore serverkey.jks
+     * -alias serverKey -file ServerPublicKey.cer (Contraseña es servpass)
      * 
-     * Creacion de certificado para cliente keytool -import -alias serverKey -file ServerPublicKey.cer -keystore clienteTrustedCerts.jks -keypass clientpass -storepass servpass
+     * Creacion de certificado para cliente keytool -import -alias serverKey -file
+     * ServerPublicKey.cer -keystore clienteTrustedCerts.jks -keypass clientpass
+     * -storepass servpass
      * 
      * @param args
-     * @throws Exception 
+     * @throws Exception
      */
 
     public static void main(String[] args) {
@@ -34,15 +36,13 @@ public class Servidor {
 	System.setProperty("javax.net.ssl.trustStore", "certs/clienteTrustedCerts.jks");
 	System.setProperty("javax.net.ssl.trustStorePassword", "medacmedac");
 
-
 	try {
 	    metodoCutreCavero();
-	    
 
 	} catch (Exception ex) {
 	    metodoCutreCavero();
 
-	    //System.err.println("Error." + ex.getMessage());
+	    // System.err.println("Error." + ex.getMessage());
 	} finally {
 	    if (socket != null) {
 		try {
@@ -55,12 +55,13 @@ public class Servidor {
 	}
 
     }
-    
-    private static void metodoCutreCavero(){
-	try {SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+
+    private static void metodoCutreCavero() {
+	try {
+	    SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 	    serverSocket = serverFactory.createServerSocket(PORT, 4);
 
-	    //serverSocket = new ServerSocket(PORT, 4);
+	    // serverSocket = new ServerSocket(PORT, 4);
 	    System.out.println("Servidor conectado. Esperando conexiones. ");
 
 	    while (true) {
@@ -101,11 +102,6 @@ public class Servidor {
 	public ControlCliente(Socket clientSocket) {
 	    this.clientSocket = clientSocket;
 	}
-	
-	public void cerrar() {
-	    System.out.println("Va a cerrar?!?!");
-	    clienteStream.remove(clientSocket);
-	}
 
 	@Override
 	public void run() {
@@ -114,13 +110,7 @@ public class Servidor {
 		boolean bConexion = true;
 		while (bConexion) {
 		    try {
-			String sMensaje = ois.readUTF();
-			if (!sMensaje.equals("gitano")) {
-				System.out.println(sMensaje);
-			} else {
-			    //cerrar();
-			    System.out.println("aqui deberia cerrar");
-			}
+			System.out.println(ois.readUTF());
 		    } catch (IOException e) {
 			System.err.println("Error en Controlcliente: " + e.getMessage());
 			bConexion = false;
@@ -128,7 +118,7 @@ public class Servidor {
 		}
 	    } catch (IOException e) {
 		System.out.println(clientSocket.getInetAddress().getHostAddress() + " disconnected from the Server");
-		//cerrar();
+		// cerrar();
 	    }
 	}
     }
