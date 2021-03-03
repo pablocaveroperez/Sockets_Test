@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import javax.net.ssl.SSLSocketFactory;
+
 public class Cliente {
 
 	private static final String HOST = "localhost";
@@ -14,12 +16,16 @@ public class Cliente {
 		BufferedReader br = null;
 		Socket socket = null;
 		int idCliente = Servidor.iContador++;
+		System.setProperty("javax.net.ssl.trustStore", "certs/clientTrustedCerts.jks");
+		System.setProperty("javax.net.ssl.trustStorePassword", "servpass");
+		
 
 		try {
 			System.out.println("El cliente se va a conectar");
-			socket = new Socket(HOST, Servidor.PORT);
-			System.out.println(socket.getTrafficClass());
-			System.out.println(socket.getInetAddress());
+			SSLSocketFactory clientFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+			socket = clientFactory.createSocket(HOST, Servidor.PORT);
+			
+			//socket = new Socket(HOST, Servidor.PORT);
 			new Thread(new Servidor.ControlCliente(socket)).start();
 			dout = new DataOutputStream(socket.getOutputStream());
 			br = new BufferedReader(new InputStreamReader(System.in));
