@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.concurrent.Semaphore;
 
 public class Control implements Runnable, Serializable {
 	/**
@@ -13,7 +12,6 @@ public class Control implements Runnable, Serializable {
 	private Socket socket;
 	public static Integer iContadorClientes = 0;
 	DataInputStream din;
-	private static Semaphore semaControl = new Semaphore(1);
 	private ObjectOutputStream objStream;
 
 	public Control(Socket socket, ObjectOutputStream objStream) {
@@ -30,7 +28,8 @@ public class Control implements Runnable, Serializable {
 				String sMensajeRecibido = din.readUTF();
 				Servidor.shareToAll(sMensajeRecibido, objStream);
 			} catch (IOException e) {
-				System.err.println("Error en IOException de run de Control");
+			    	Servidor.clienteStream.remove(objStream);
+				System.err.println("Usuario expulsado por gitano");
 				bConectado = false;
 			}
 
