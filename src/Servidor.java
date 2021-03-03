@@ -28,7 +28,7 @@ public class Servidor {
      * @throws Exception 
      */
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 	System.setProperty("javax.net.ssl.keyStore", "certs/serverKey.jks");
 	System.setProperty("javax.net.ssl.keyStorePassword", "medacmedac");
 	System.setProperty("javax.net.ssl.trustStore", "certs/clienteTrustedCerts.jks");
@@ -56,8 +56,8 @@ public class Servidor {
 
     }
     
-    private static void metodoCutreCavero() throws Exception {
-	SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+    private static void metodoCutreCavero(){
+	try {SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 	    serverSocket = serverFactory.createServerSocket(PORT, 4);
 
 	    //serverSocket = new ServerSocket(PORT, 4);
@@ -72,6 +72,9 @@ public class Servidor {
 		t.start();
 
 	    }
+	} catch (Exception e) {
+	    metodoCutreCavero();
+	}
     }
 
     public static int getNewID() {
@@ -100,6 +103,7 @@ public class Servidor {
 	}
 	
 	public void cerrar() {
+	    System.out.println("Va a cerrar?!?!");
 	    clienteStream.remove(clientSocket);
 	}
 
@@ -110,8 +114,13 @@ public class Servidor {
 		boolean bConexion = true;
 		while (bConexion) {
 		    try {
-
-			System.out.println(ois.readUTF());
+			String sMensaje = ois.readUTF();
+			if (!sMensaje.equals("gitano")) {
+				System.out.println(sMensaje);
+			} else {
+			    //cerrar();
+			    System.out.println("aqui deberia cerrar");
+			}
 		    } catch (IOException e) {
 			System.err.println("Error en Controlcliente: " + e.getMessage());
 			bConexion = false;
@@ -119,7 +128,7 @@ public class Servidor {
 		}
 	    } catch (IOException e) {
 		System.out.println(clientSocket.getInetAddress().getHostAddress() + " disconnected from the Server");
-		cerrar();
+		//cerrar();
 	    }
 	}
     }

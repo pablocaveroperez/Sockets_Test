@@ -24,10 +24,7 @@ public class Cliente {
 	    SSLSocketFactory clientFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 	    socket = clientFactory.createSocket(HOST, Servidor.PORT);
 
-	    // socket = new Socket(HOST, Servidor.PORT);
-	    Servidor.ControlCliente hilo = new Servidor.ControlCliente(socket);
-	   new Thread(hilo).start();
-	    //hilo.start();
+	    new Thread(new Servidor.ControlCliente(socket)).start();
 	    dout = new DataOutputStream(socket.getOutputStream());
 	    br = new BufferedReader(new InputStreamReader(System.in));
 	    String sMensajeEnviado = "";
@@ -36,8 +33,7 @@ public class Cliente {
 		dout.writeUTF("# " + idCliente + " : " + sMensajeEnviado);
 	    }
 	    System.out.println("Adios, por racista");
-	    hilo.cerrar();
-
+	    System.exit(0);
 	} catch (Exception ex) {
 
 	    if (socket != null) {

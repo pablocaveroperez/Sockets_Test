@@ -28,9 +28,15 @@ public class Control implements Runnable, Serializable {
 			try {
 				din = new DataInputStream(this.socket.getInputStream());
 				String sMensajeRecibido = din.readUTF();
-				Servidor.shareToAll(sMensajeRecibido, objStream);
+				if (!sMensajeRecibido.equals("gitano")) {
+					Servidor.shareToAll(sMensajeRecibido, objStream);
+				} else {
+				    Servidor.clienteStream.remove(objStream);
+				    System.out.println("Se pira paco");
+				}
 			} catch (IOException e) {
 				System.err.println("Error en IOException de run de Control");
+				e.printStackTrace();
 				bConectado = false;
 			}
 
