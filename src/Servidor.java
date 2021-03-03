@@ -9,6 +9,18 @@ import java.net.Socket;
 public class Servidor {
 
     public static final int PORT = 1234;
+    
+    /**
+     * Creacion de certificados:
+     * keytool -genkey -keyalg RSA -alias serverKey -keystore serverKey.jks -storepass servpass
+     * 
+     * Creacion de certificado de servidor
+     * keytool -export -keystore serverkey.jks -alias serverKey -file ServerPublicKey.cer
+     * 
+     * Creacion de certificado para cliente
+     * keytool -import -alias serverKey -file ServerPublicKey.cer -keystore clienteTrustedCerts.jks -keypass clientpass -storepass servpass
+     * @param args
+     */
 
     public static void main(String[] args) {
 	DataInputStream din = null;
